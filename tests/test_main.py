@@ -126,9 +126,6 @@ class TestRunApp:
 class TestTrainAndSave:
     """Test cases for train_and_save function."""
 
-    @patch('src.main.ModelTrainer')
-    @patch('src.main.DataProcessor')
-    @patch('builtins.print')
 @patch('src.main.ModelTrainer')
 @patch('src.main.DataProcessor')
 @patch('builtins.print')
