@@ -129,41 +129,44 @@ class TestTrainAndSave:
     @patch('src.main.ModelTrainer')
     @patch('src.main.DataProcessor')
     @patch('builtins.print')
-    def test_train_and_save(self, mock_print, mock_data_processor_class, mock_trainer_class, sample_data_csv_path: str, temp_model_output: str) -> None:
-        """Test train_and_save function."""
-        # Setup mocks
-        mock_processor = MagicMock()
-        mock_data_processor_class.return_value = mock_processor
-        
-        mock_trainer = MagicMock()
-        mock_trainer_class.return_value = mock_trainer
-        
-        # Mock trainer methods
-        mock_trainer.compare.return_value = MagicMock()
-        mock_trainer.save_best_model.return_value = "Random Forest"
-        
-        # Mock split data return
-        import pandas as pd
-        import numpy as np
-        X_train = pd.DataFrame(np.random.randn(80, 13))
-        X_test = pd.DataFrame(np.random.randn(20, 13))
-        y_train = pd.Series(np.random.randint(0, 2, 80))
-        y_test = pd.Series(np.random.randint(0, 2, 20))
-        
-        mock_processor.split_data.return_value = (X_train, X_test, y_train, y_test)
-        
-        # Call the function
-        train_and_save(sample_data_csv_path, temp_model_output)
-        
-        # Verify calls
-        mock_processor.load_data.assert_called_once()
-        mock_processor.clean_data.assert_called_once()
-        mock_processor.split_data.assert_called_once()
-        mock_trainer.train_models.assert_called_once()
-        mock_trainer.evaluate.assert_called_once()
-        mock_trainer.compare.assert_called_once()
-        mock_trainer.save_best_model.assert_called_once_with(temp_model_output)
+@patch('src.main.ModelTrainer')
+@patch('src.main.DataProcessor')
+@patch('builtins.print')
+def test_train_and_save(self, mock_print, mock_data_processor_class, mock_trainer_class, sample_data_csv_path: str, temp_model_output: str) -> None:
+    """Test train_and_save function."""
+    mock_processor = MagicMock()
+    mock_data_processor_class.return_value = mock_processor
 
+    mock_trainer = MagicMock()
+    mock_trainer_class.return_value = mock_trainer
+
+    mock_trainer.save_best_model.return_value = "Random Forest"
+
+    # Must be set BEFORE train_and_save() is called
+    mock_trainer.compare.return_value.set_index.return_value.T.to_dict.return_value = {
+        "Logistic Regression": {"accuracy": 0.87, "f1": 0.88, "precision": 0.86, "recall": 0.89, "roc_auc": 0.94},
+        "Random Forest":       {"accuracy": 0.89, "f1": 0.89, "precision": 0.88, "recall": 0.91, "roc_auc": 0.96},
+    }
+
+    import pandas as pd
+    import numpy as np
+    mock_processor.split_data.return_value = (
+        pd.DataFrame(np.random.randn(80, 13)),
+        pd.DataFrame(np.random.randn(20, 13)),
+        pd.Series(np.random.randint(0, 2, 80)),
+        pd.Series(np.random.randint(0, 2, 20)),
+    )
+
+    train_and_save(sample_data_csv_path, temp_model_output)
+
+    mock_processor.load_data.assert_called_once()
+    mock_processor.clean_data.assert_called_once()
+    mock_processor.split_data.assert_called_once()
+    mock_trainer.train_models.assert_called_once()
+    mock_trainer.evaluate.assert_called_once()
+    mock_trainer.compare.assert_called_once()
+    mock_trainer.save_best_model.assert_called_once_with(temp_model_output)
+           
     @patch('src.main.ModelTrainer')
     @patch('src.main.DataProcessor')
     @patch('builtins.print')
