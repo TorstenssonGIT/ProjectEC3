@@ -5,7 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 import pytest
 
-from src.app import HeartApp, FeatureInfo
+from src.terminal_app import HeartApp, FeatureInfo
 
 
 class TestFeatureInfo:
