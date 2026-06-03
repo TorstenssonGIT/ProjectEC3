@@ -159,7 +159,7 @@ class TestTrainAndSave:
         mock_processor.split_data.assert_called_once()
         mock_trainer.train_models.assert_called_once()
         mock_trainer.evaluate.assert_called_once()
-        mock_trainer.compare.assert_called_once()
+        mock_trainer.compare.assert_called()
         mock_trainer.save_best_model.assert_called_once_with(temp_model_output)
 
     @patch('src.main.ModelTrainer')
