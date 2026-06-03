@@ -19,6 +19,7 @@ from sklearn.metrics import (
 )
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
 
 
 @dataclass
@@ -61,6 +62,17 @@ class ModelTrainer:
                             n_estimators=200,
                             random_state=self.random_state,
                             n_jobs=-1,
+                        ),
+                    )
+                ]
+            ),
+            "Decision Tree": Pipeline(
+                [
+                    (
+                        "model",
+                        DecisionTreeClassifier(
+                            max_depth=10,
+                            random_state=self.random_state,
                         ),
                     )
                 ]
